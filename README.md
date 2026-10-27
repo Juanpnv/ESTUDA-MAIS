@@ -1,1 +1,1 @@
-# FinSin
+# Estuda+
