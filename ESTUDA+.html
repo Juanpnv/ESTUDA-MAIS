@@ -259,26 +259,33 @@ h1{letter-spacing:-.02em;line-height:1.15}h2{letter-spacing:-.01em}.mu{line-heig
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--c2);border-radius:8px}
 img{max-width:100%}
 </style><style id="desktop-v2">
-/* ===== Computador v2: alinhamento do cabeçalho e uso do espaço ===== */
+/* ===== Computador v3: conteúdo ocupa a tela toda ===== */
+@media (min-width:700px){
+ #app{max-width:none}
+ nav{max-width:none}
+ .fab{right:24px}
+}
 @media (min-width:1024px){
- #app>.hh{margin:-36px 0 24px;padding:26px 40px 40px}
+ #app{max-width:none;padding:36px 48px 48px}
+ #app>.hh{margin:-36px -48px 24px;padding:26px 48px 40px}
  #app>.hh .lgh{height:64px}
- /* Séries: lista em grade */
- .sg3{grid-template-columns:repeat(2,minmax(0,1fr))}
- /* Início: duas colunas */
+ .fab{right:40px}
+ .sg3{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
  #app:has(>.hh){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-content:start}
- #app:has(>.hh)>.hh,#app:has(>.hh)>.gt,#app:has(>.hh)>.qa{grid-column:1/-1}
+ #app:has(>.hh)>.hh,#app:has(>.hh)>.gt{grid-column:1/-1}
  #app:has(>.hh)>.hero{grid-column:1;grid-row:3;margin:6px 0 8px}
  #app:has(>.hh)>.mg{grid-column:2;grid-row:3;margin:6px 0 8px}
  #app:has(>.hh)>.cta{grid-column:1/-1;grid-row:4}
  #app:has(>.hh)>.wkc{grid-column:1/-1;grid-row:5}
- #app:has(>.hh)>.qa{grid-row:6}
- /* Perfil: duas colunas */
+ #app:has(>.hh)>.qa{grid-column:1/-1;grid-row:6}
  #app:has(>.c.lv){column-count:2;column-gap:20px}
  #app:has(>.c.lv)>*{break-inside:avoid}
 }
-@media (min-width:1440px){
- .sg3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-height:480px) and (orientation:landscape){
+ #app>.hh{padding:8px 16px 22px}
+ #app>.hh .lgh{height:38px}
+ #app>.hh .lg{font-size:30px;margin-top:2px}
+ #app>.hh .tg{display:none}
 }
 </style>
 </head><body><noscript><p style="font:16px system-ui;padding:24px;text-align:center">O Estuda+ precisa do JavaScript ativado para funcionar.</p></noscript><script>
