@@ -258,7 +258,30 @@ h1{letter-spacing:-.02em;line-height:1.15}h2{letter-spacing:-.01em}.mu{line-heig
 .toast{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--bd)}
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--c2);border-radius:8px}
 img{max-width:100%}
-</style></head><body><noscript><p style="font:16px system-ui;padding:24px;text-align:center">O Estuda+ precisa do JavaScript ativado para funcionar.</p></noscript><script>
+</style><style id="desktop-v2">
+/* ===== Computador v2: alinhamento do cabeçalho e uso do espaço ===== */
+@media (min-width:1024px){
+ #app>.hh{margin:-36px 0 24px;padding:26px 40px 40px}
+ #app>.hh .lgh{height:64px}
+ /* Séries: lista em grade */
+ .sg3{grid-template-columns:repeat(2,minmax(0,1fr))}
+ /* Início: duas colunas */
+ #app:has(>.hh){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-content:start}
+ #app:has(>.hh)>.hh,#app:has(>.hh)>.gt,#app:has(>.hh)>.qa{grid-column:1/-1}
+ #app:has(>.hh)>.hero{grid-column:1;grid-row:3;margin:6px 0 8px}
+ #app:has(>.hh)>.mg{grid-column:2;grid-row:3;margin:6px 0 8px}
+ #app:has(>.hh)>.cta{grid-column:1/-1;grid-row:4}
+ #app:has(>.hh)>.wkc{grid-column:1/-1;grid-row:5}
+ #app:has(>.hh)>.qa{grid-row:6}
+ /* Perfil: duas colunas */
+ #app:has(>.c.lv){column-count:2;column-gap:20px}
+ #app:has(>.c.lv)>*{break-inside:avoid}
+}
+@media (min-width:1440px){
+ .sg3{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head><body><noscript><p style="font:16px system-ui;padding:24px;text-align:center">O Estuda+ precisa do JavaScript ativado para funcionar.</p></noscript><script>
 (function(){var t=0;function r(m){try{var l=JSON.parse(localStorage.getItem("ea_err")||"[]");l.push({t:Date.now(),m:String(m).slice(0,200)});localStorage.setItem("ea_err",JSON.stringify(l.slice(-20)))}catch(e){}
 var n=Date.now();if(n-t<5000)return;t=n;try{if(typeof toast=="function")toast("Algo deu errado. Tente novamente.")}catch(e){}}
 addEventListener("error",function(e){r(e&&e.message)});addEventListener("unhandledrejection",function(e){r(e&&e.reason&&e.reason.message||e.reason)})})();
