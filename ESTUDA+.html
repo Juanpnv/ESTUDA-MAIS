@@ -1278,8 +1278,8 @@ async function forgot(){const e=$("#e").value.trim().toLowerCase();if(!SBon())re
 /* ===== Lembretes ===== */
 const RH=()=>D.rh==null?19:D.rh;
 async function ntf(t,b){try{if("Notification"in window&&Notification.permission=="granted"){const r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(r)return r.showNotification(t,{body:b,icon:"icon-192.png"});new Notification(t,{body:b});return}}catch(x){window.EAlog&&EAlog(x)}toast(b)}
-function lem(){if(!D||!D.tasks||!D.notif||D.rl==TODAY||new Date().getHours()<RH())return;const n=TS().filter(t=>!t.ok&&t.date<=TODAY).length,m=n?`Você tem ${n} tarefa(s) pendente(s). Bora estudar?`:D.last!=TODAY?"Ainda dá tempo de estudar hoje e manter sua sequência!":"";if(!m)return;D.rl=TODAY;save();ntf("Estuda+",m)}
-async function lnSch(){const L=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;if(!L||!D)return;try{await L.cancel({notifications:[{id:1}]});if(D.notif){await L.requestPermissions();await L.schedule({notifications:[{id:1,title:"Estuda+",body:"Hora de estudar! Suas tarefas estão te esperando.",schedule:{on:{hour:RH(),minute:0},allowWhileIdle:true}}]})}}catch(x){window.EAlog&&EAlog(x)}}
+function lem(){if(!D||!D.tasks||!D.notif||D.rl==TODAY||new Date().getHours()<RH())return;const n=TS().filter(t=>!t.ok&&t.date<=TODAY).length,m=(window.mFalaN&&mFalaN())||(n?`Você tem ${n} tarefa(s) pendente(s). Bora estudar?`:D.last!=TODAY?"Ainda dá tempo de estudar hoje e manter sua sequência!":"");if(!m)return;D.rl=TODAY;save();ntf(window.mFalaTit?mFalaTit():"Estuda+",m)}
+async function lnSch(){const L=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;if(!L||!D)return;try{await L.cancel({notifications:[{id:1}]});if(D.notif){await L.requestPermissions();await L.schedule({notifications:[{id:1,title:(window.mFalaTit?mFalaTit():"Estuda+"),body:(window.mFalaFixa?mFalaFixa():"Hora de estudar! Suas tarefas estão te esperando."),schedule:{on:{hour:RH(),minute:0},allowWhileIdle:true}}]})}}catch(x){window.EAlog&&EAlog(x)}}
 async function notifOn(){if(D.notif){try{if("Notification"in window&&Notification.permission=="default")await Notification.requestPermission()}catch(x){window.EAlog&&EAlog(x)}}lnSch();lem()}
 const SEL=()=>`<div class="c row sp"><div><b>Lembrete diário</b><div class="mu">Aviso se ainda não estudou ou há tarefas</div></div><select class="in" style="width:auto;margin:0" onchange="D.rh=+this.value;D.rl=0;save();lnSch();R()">${[...Array(17)].map((_,i)=>`<option value="${i+6}" ${RH()==i+6?"selected":""}>${String(i+6).padStart(2,"0")}:00</option>`).join("")}</select></div>`;
 const CT={qb:J("ea_qb",[]),ex:J("ea_ex",{}),sm:J("ea_sm",[])};Q.push(...CT.qb.filter(x=>x.ap!==0));BK.S=CT.sm;
@@ -1848,7 +1848,7 @@ duelo:()=>`${hdb("hub","Duelo")}<div class="pf" style="padding:16px;line-height:
 foco:()=>{const F=D.fc;if(F&&F.end-Date.now()>0)return`${hdb("hub","Modo foco")}<div class="pf" style="text-align:center;padding:30px 16px"><div class="mu">Foco total por ${F.min} minutos</div><div id="fct" style="font-size:72px;font-weight:800;letter-spacing:2px;margin:10px 0">${fcFmt(F.end-Date.now())}</div><div class="mu">Deixe o app aberto. Ao terminar você ganha XP e os minutos entram na meta do dia.</div></div><button class="btn o" onclick="if(confirm('Desistir? Você não ganha XP desta sessão.'))fcStop()">Desistir</button>`;
 return`${hdb("hub","Modo foco")}<div class="pf" style="padding:16px;line-height:1.5"><b style="font-size:19px">Cronômetro de estudo</b><div class="mu" style="margin-top:6px">Escolha o tempo e estude sem distração. Cada 5 minutos concluídos valem +2 XP e entram na sua meta diária.</div><div class="mu" style="margin-top:8px">Sessões concluídas: ${D.fcn||0}</div></div>${[15,25,45,60].map(m=>`<button class="btn ${m==25?"":"o"}" onclick="fcStart(${m})">${m} minutos${m==25?" (recomendado)":""}</button>`).join("")}`},
 
-masc:()=>{const l=lvl(),ci=rkI(l),st=Math.min(ci,7),nx=LT[ci+1],col=getComputedStyle(document.documentElement).getPropertyValue("--rd").trim()||"#ff0000";return`${hdb("hub","Seu mascote")}<div class="pf" style="text-align:center;padding:20px 16px"><div style="display:flex;justify-content:center">${mascSvg(st,col)}</div><h1 style="margin:6px 0 0">${esc(D.mn||"Estudinho")}</h1><div class="mu" style="color:${LT[ci][3]};font-weight:700">${LT[ci][1]} · fase ${st+1}</div><div class="mu" style="margin-top:8px;line-height:1.5">${nx?`Evolui no nível ${nx[0]} (${nx[1]}). Você está no nível ${l}.`:"Ele chegou na forma final!"}</div>${nx?`<div class="bar"><i style="width:${Math.min(100,100*(l-LT[ci][0])/(nx[0]-LT[ci][0]))}%"></i></div>`:""}</div><div class="c"><b>Nome do mascote</b><input class="in" id="mnn" value="${esc(D.mn||"Estudinho")}" maxlength="16" style="margin-top:8px"></div><button class="btn" onclick="mnSv()">Salvar nome</button><div class="mu" style="font-size:13px;line-height:1.5;margin-top:12px">Ele ganha um visual novo a cada rank: ovo, bebê, pezinhos, livro, óculos, capelo, capa e coroa de luz.</div>`}
+masc:()=>{const l=lvl(),ci=rkI(l),st=Math.min(ci,7),nx=LT[ci+1],col=getComputedStyle(document.documentElement).getPropertyValue("--rd").trim()||"#ff0000";return`${hdb("hub","Seu mascote")}<div class="pf" style="text-align:center;padding:20px 16px"><div style="display:flex;justify-content:center">${mascSvg(st,col)}</div><h1 style="margin:6px 0 0">${esc(D.mn||"Estudinho")}</h1><div class="mu" style="color:${LT[ci][3]};font-weight:700">${LT[ci][1]} · fase ${st+1}</div><div class="mu" style="margin-top:8px;line-height:1.5">${nx?`Evolui no nível ${nx[0]} (${nx[1]}). Você está no nível ${l}.`:"Ele chegou na forma final!"}</div>${nx?`<div class="bar"><i style="width:${Math.min(100,100*(l-LT[ci][0])/(nx[0]-LT[ci][0]))}%"></i></div>`:""}</div><div class="c"><b>Nome do mascote</b><input class="in" id="mnn" value="${esc(D.mn||"Estudinho")}" maxlength="16" style="margin-top:8px"></div><button class="btn" onclick="mnSv()">Salvar nome</button><div class="mu" style="font-size:13px;line-height:1.5;margin-top:12px">Ele cresce até o nível 5. Os acessórios (óculos, capelo, capa, medalha e auréola) ficam na loja, com moedas.</div>`}
 });
 setTimeout(()=>{try{wkInit()}catch(e){window.EAlog&&EAlog(e)}},2000);
 
@@ -2043,7 +2043,7 @@ const _fd0=fcDone;fcDone=function(){const m=D.fc&&D.fc.min;_fd0();if(m){const b=
 const tlAdd=t=>{(D.tl=D.tl||[]).push({d:TODAY,t});D.tl=D.tl.slice(-50)},coins=()=>Math.max(0,Math.floor(D.xp/20)-(D.gs||0)),
 stTog=n=>{D.sel=D.sel||{};if(D.sel[n])delete D.sel[n];else{D.sel[n]=TODAY;tlAdd("Estudei "+n)}save();R()},
 stBtn=n=>`<button class="btn o" onclick="stTog(${wq(n)})">${(D.sel||{})[n]?"✓ Estudei esta prova (desmarcar)":"Marcar como estudada"}</button>`,
-mTip=()=>{const t=TS().filter(x=>!x.ok).length,nd=cadDue().length,P=D.pl,h=new Date().getHours();return nd?`Você tem ${nd} questão(ões) para revisar no caderno de erros.`:t?`Tem ${t} tarefa(s) esperando por você.`:P&&P.d>=TODAY?`Faltam ${dBetween(TODAY,P.d)} dias para ${esc(P.n)}. Um pouquinho por dia ajuda muito!`:D.dd!=TODAY?"O desafio do dia vale XP em dobro. Vamos?":h<6||h>=23?"Já está tarde. Descansar também faz parte de estudar!":"Tudo em dia! Que tal uma sessão de foco?"},
+mTip=()=>{if(window.mFalaT){const x=mFalaT();if(x)return x}const t=TS().filter(x=>!x.ok).length,nd=cadDue().length,P=D.pl,h=new Date().getHours();return nd?`Você tem ${nd} questão(ões) para revisar no caderno de erros.`:t?`Tem ${t} tarefa(s) esperando por você.`:P&&P.d>=TODAY?`Faltam ${dBetween(TODAY,P.d)} dias para ${esc(P.n)}. Um pouquinho por dia ajuda muito!`:D.dd!=TODAY?"O desafio do dia vale XP em dobro. Vamos?":h<6||h>=23?"Já está tarde. Descansar também faz parte de estudar!":"Tudo em dia! Que tal uma sessão de foco?"},
 mGuia=()=>`<div class="c" style="display:flex;gap:10px;align-items:center"><div style="flex:none">${mascSvg(Math.min(rkI(lvl()),7),"var(--rd)",0,64)}</div><div style="font-size:14px;line-height:1.45"><b>${esc(D.mn||"Estudinho")}</b><div class="mu">${mTip()}</div></div></div>`,
 prio=()=>SUB.map((s,i)=>[i,s[1],sp(i)]).filter(x=>AV(SUB[x[0]],D.g)&&TV(x[0]).length).sort((a,b)=>a[2]-b[2]).slice(0,3);
 const ntAdd=()=>{const v=($("#nt").value||"").trim();if(!v)return;(D.nt=D.nt||[]).unshift({id:Date.now(),x:v.slice(0,300),d:TODAY});save();R()},ntDel=i=>{D.nt=(D.nt||[]).filter(x=>x.id!=i);save();R()},
@@ -2059,7 +2059,7 @@ cdn:()=>{const t=CDN.t,tabs=[["n","Notas"],["e","Erros"],["f","Favoritos"]].map(
 pass:()=>{const S=Object.keys(D.sel||{}),tl=(D.tl||[]).slice().reverse().slice(0,20);return`${hdb("prof","Meu passaporte")}<h2 class="sh2">Selos (${S.length})</h2>${S.length?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${S.map(n=>`<div style="text-align:center"><div style="width:62px;height:62px;border-radius:50%;margin:0 auto;border:3px dashed var(--rd);display:grid;place-items:center;font-weight:800;font-size:13px">${esc(n.replace(/[^A-Za-zÀ-ú0-9+]/g,"").slice(0,4).toUpperCase())}</div><div class="mu" style="font-size:11px;margin-top:4px">${D.sel[n].slice(5).split("-").reverse().join("/")}</div></div>`).join("")}</div>`:'<div class="c mu">Marque provas como estudadas na página de cada olimpíada ou vestibular para ganhar selos.</div>'}<h2 class="sh2">Linha do tempo</h2><div class="c mn">${tl.map(e=>`<div class="mr2"><div class="g"><b>${esc(e.t)}</b><div class="mu">${e.d}</div></div></div>`).join("")||'<div class="mu" style="padding:12px">Seus marcos aparecem aqui.</div>'}</div>`},
 sala:()=>{const r=rms(),ks=Object.keys(r).filter(k=>r[k].m.includes(cur));return`${hdb("hub","Salas de estudo")}<div class="c mu" style="font-size:13px;line-height:1.5">Crie uma sala e compartilhe o código. O ranking é só de quem está na sala e vale para as contas deste aparelho. Para amigos em outros celulares é preciso ativar o servidor.</div><input class="in" id="sn" placeholder="Nome da sala" maxlength="30"><button class="btn" onclick="saNew()">Criar sala</button><input class="in" id="sc" placeholder="Código da sala" maxlength="5" autocomplete="off"><button class="btn o" onclick="saJoin()">Entrar com código</button>${ks.map(k=>{const rk=r[k].m.map(e=>[(U[e]||{}).name||e,(J("ea_d_"+e,{})||{}).xp||0]).sort((a,b)=>b[1]-a[1]);return`<h2 class="sh2">${esc(r[k].n)} · código ${k}</h2><div class="c mn">${rk.map((x,i)=>`<div class="mr2"><span class="ib3" style="font-weight:800">${i+1}</span><div class="g"><b>${esc(x[0])}</b><div class="mu">${x[1]} XP</div></div></div>`).join("")}</div><div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="go('foco')">Estudar junto</button><button class="btn o" style="flex:1" onclick="saOut('${k}')">Sair</button></div>`}).join("")}`}});
 let CDN={t:"n"};
-const _ma0=VW.masc;VW.masc=()=>_ma0()+`<h2 class="sh2">Loja do mascote · ${coins()} moedas</h2><div class="mu" style="font-size:12.5px;margin:-4px 0 8px">Cada 20 XP viram 1 moeda. Seu nível não diminui.</div><div class="c mn">${ACC.map(a=>{const o=(D.own||[]).includes(a[0]);return`<div class="mr2"><div class="g"><b>${a[1]}</b><div class="mu">${o?(D.on==a[0]?"Em uso":"Comprado"):a[2]+" moedas"}</div></div><button class="pl" style="margin:0;padding:6px 12px;font-size:13px" onclick="buy('${a[0]}')">${o?(D.on==a[0]?"Tirar":"Usar"):"Comprar"}</button></div>`}).join("")}</div>`;
+const _ma0=VW.masc;
 const _fo0=VW.foco;VW.foco=()=>{const h=_fo0(),F=D.fc;return F&&F.end>Date.now()?h.replace('<div class="pf" style="text-align:center;padding:30px 16px">','<div class="pf" style="text-align:center;padding:30px 16px"><div style="display:flex;justify-content:center">'+mascSvg(Math.min(rkI(lvl()),7),"var(--rd)",0,110)+'</div><div class="mu">'+esc(D.mn||"Estudinho")+' estuda com você e dá +50% de XP de bônus</div>'):h};
 
 const hoje=()=>{const pd=TS().filter(t=>!t.ok),at=pd.filter(t=>t.date<TODAY).length,nr=cadDue().length,mn=D.min[(new Date().getDay()+6)%7],goal=Math.max(1,(D.meta||2)*60),lg=(D.lg||{})[D.g],lt=lg&&SUB[sid(lg.s)]&&SUB[sid(lg.s)][4][lg.k],
@@ -2346,6 +2346,9 @@ window.EAst={err:(t,r)=>`<div class="st er" role="alert"><span>${esc(t)}</span>$
 .tfm h2{margin:0;font-size:20px}.tfm .sh2{font-size:15px;margin:18px 0 0}.tfm .in{margin:0;min-height:46px}.tfm .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tfm .ba{display:flex;gap:8px;margin-top:20px}.tfm .ba .btn{margin:0;flex:1}.tfm .dng{margin-top:8px;color:#f87171}
 @media(prefers-reduced-motion:reduce){.tfm,.tfm>form{animation:none}.btn.ldg:before{animation-duration:2s}}
+.au .btn:focus,.au .btn:focus-visible,.au .btn:active,.au .lk:focus,.au .lk:focus-visible,.au .ib:focus,.au .ib:focus-visible,.btn:focus:not(:focus-visible){outline:0!important;box-shadow:none!important;-webkit-tap-highlight-color:transparent}
+.if input:focus,.if input:focus-visible,.if select:focus,.if select:focus-visible,.in:focus,.in:focus-visible,textarea:focus,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:0!important;box-shadow:none!important}
+label.fl{border:0!important;background:none!important;padding:0!important;border-radius:0!important}
 </style>
 
 <script id="chocar-js">
@@ -2383,44 +2386,214 @@ window.EAst={err:(t,r)=>`<div class="st er" role="alert"><span>${esc(t)}</span>$
 </script>
 <script id="mascotes-js">
 (function(){
-var SP=[["raposa","Raposa","esperta e rápida"],["coruja","Coruja","calma e observadora"],["gato","Gato","curioso e independente"],["dragao","Dragão","forte e corajoso"],["robo","Robô","lógico e preciso"]],
-NM=["filhote","cresce","cachecol","óculos","capelo","capa","medalha","auréola","estrelas","dourado"],
-KS=[.6,.68,.76,.84,.9,.94,.96,.98,1,1];
+var SP=[["raposa","Raposa","esperta e rápida"],["coruja","Coruja","calma e observadora"],["gato","Gato","curioso e independente"],["dragao","Dragão","forte e corajoso"],["robo","Robô","lógico e preciso"],["hacker","Hacker","curioso e furtivo"]],
+NM=["filhote","jovem","aprendiz","veterano","adulto","óculos","capelo","capa","medalha","auréola"],
+KS=[.6,.72,.84,.93,1,1,1,1,1,1];
 function sv(z,i,t){return'<svg viewBox="0 0 200 200" width="'+z+'" height="'+z+'" role="img" aria-label="'+t+'">'+i+'</svg>'}
-function egg(z,cr){var P="",i,x;for(i=0;i<=10;i++){x=40+i*12;P+=(i?"L":"M")+x+" "+(i%2?112:128)}
-var d="M100 38C138 38 158 92 158 128C158 165 133 186 100 186C67 186 42 165 42 128C42 92 62 38 100 38Z";
-return sv(z,'<defs><linearGradient id="eg" x1=".25" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#eceef5"/><stop offset="1" stop-color="#c9cddd"/></linearGradient><radialGradient id="egl"><stop offset="0" stop-color="#ff2a2a" stop-opacity=".28"/><stop offset="1" stop-color="#ff2a2a" stop-opacity="0"/></radialGradient><clipPath id="egc"><path d="'+d+'"/></clipPath></defs><circle cx="100" cy="116" r="92" fill="url(#egl)"/><ellipse cx="100" cy="188" rx="44" ry="7" fill="#000" opacity=".3"/><path d="'+d+'" fill="url(#eg)"/><g clip-path="url(#egc)"><path d="'+P+'" stroke="#e11d2e" stroke-width="9" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="'+P.replace(/(\d+) (\d+)/g,function(m,a,b){return a+" "+(+b+14)})+'" stroke="#7f1d1d" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".55"/><circle cx="84" cy="70" r="4.5" fill="#e11d2e"/><circle cx="116" cy="86" r="3" fill="#e11d2e"/><circle cx="100" cy="60" r="2.5" fill="#7f1d1d"/><circle cx="72" cy="94" r="2.5" fill="#7f1d1d"/><circle cx="130" cy="64" r="2" fill="#e11d2e"/><circle cx="70" cy="156" r="4" fill="#e11d2e"/><circle cx="102" cy="166" r="3" fill="#7f1d1d"/><circle cx="130" cy="152" r="4.5" fill="#e11d2e"/><circle cx="116" cy="174" r="2.2" fill="#e11d2e"/><ellipse cx="138" cy="150" rx="40" ry="56" fill="#1e2340" opacity=".09"/></g><ellipse cx="76" cy="82" rx="9" ry="20" fill="#fff" opacity=".9" transform="rotate(-22 76 82)"/><circle cx="64" cy="112" r="3" fill="#fff" opacity=".8"/><path d="'+d+'" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/>'+(cr?'<path d="M98 42l9 20-12 14 13 14-9 16" stroke="#fde68a" stroke-width="7" fill="none" stroke-linejoin="round" opacity=".55"/><path d="M98 42l9 20-12 14 13 14-9 16" stroke="#111" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>':""),"Ovo do mascote").replace("<svg ",'<svg class="egg" ')}
-function qm(z){return sv(z,'<circle cx="100" cy="112" r="56" fill="#17171c" stroke="#3f3f46" stroke-width="3"/><text x="100" y="134" text-anchor="middle" font-size="64" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">?</text>',"Mascote ainda não escolhido")}
+function egg(z,cr){var sh="M100 36C136 36 157 94 157 131C157 167 132 189 100 189C68 189 43 167 43 131C43 94 64 36 100 36Z",R="#e11d2e",W="#0d0d10";return sv(z,'<defs><clipPath id="egc"><path d="'+sh+'"/></clipPath></defs><ellipse cx="100" cy="188" rx="60" ry="12" fill="#3f2711"/><path d="M36 182Q62 168 94 182" stroke="#5e3d20" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M164 182Q138 168 106 182" stroke="#5e3d20" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M28 178Q30 194 66 196" stroke="#6b4526" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M172 178Q170 194 134 196" stroke="#6b4526" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M40 194Q100 208 160 194" stroke="#7a5230" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M30 172l-9-7M30 172l-1-11M170 172l9-7M170 172l1-11M52 176l-6-9M148 176l6-9" stroke="#7a5230" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M44 178Q64 172 84 180M156 178Q136 172 116 180" stroke="#a37a4a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/><g fill="#3f2711"><circle cx="64" cy="172" r="2.6"/><circle cx="140" cy="173" r="2.6"/><circle cx="100" cy="203" r="2.4"/></g><path d="'+sh+'" fill="'+W+'"/><g clip-path="url(#egc)"><path d="M30 126l10-12 10 12 10-12 10 12 10-12 10 12 10-12 10 12 10-12 10 12 10-12 10 12 10-12v22l-10 12-10-12-10 12-10-12-10 12-10-12-10 12-10-12-10 12-10-12-10 12-10-12z" fill="'+R+'"/><g fill="'+R+'"><circle cx="86" cy="72" r="3.2"/><circle cx="112" cy="62" r="2.4"/><circle cx="126" cy="86" r="3.4"/><circle cx="76" cy="98" r="2.6"/><circle cx="104" cy="92" r="2"/><circle cx="70" cy="168" r="3"/><circle cx="132" cy="166" r="3.2"/><circle cx="104" cy="176" r="2.4"/></g></g><path d="'+sh+'" fill="none" stroke="'+R+'" stroke-width="3"/><path d="M44 184Q74 196 106 190" stroke="#7a5230" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M156 184Q126 196 94 191" stroke="#5e3d20" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M58 190Q100 200 142 190" stroke="#8c6239" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M52 186Q76 192 100 190M148 186Q124 192 100 191" stroke="#b88a54" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".6"/><g fill="#3f2711"><circle cx="78" cy="193" r="2.4"/><circle cx="124" cy="193" r="2.4"/></g><path d="M64 192l-3 5M120 196l2 5M88 197l-1 5" stroke="#7a5230" stroke-width="2.2" stroke-linecap="round" fill="none"/>'+(cr?'<g stroke="'+R+'" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M96 40l6 9-8 8 8 8-7 9 7 8-6 9 3 8-3 9"/><path d="M94 57l-8 3-4 7M102 74l9 3 5 8M95 91l-9 5-3 8M103 108l9 3 3 8M97 125l-8 4M99 49l7-3M96 66l-7-2"/></g>':""),"Ovo do mascote").replace("<svg ",'<svg class="egg" ')}
+function qm(z){return sv(z,'<path d=\"M28 34L62 39L45 60Z\" fill=\"#fff\"/><path d=\"M172 34L138 39L155 60Z\" fill=\"#fff\"/><path d=\"M30 92L48 106L64 84L82 104L100 80L118 104L136 84L152 106L170 92C172 150 140 190 100 190C60 190 28 150 30 92Z\" fill=\"#fff\" stroke=\"#fff\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M42 102L54 112L66 98L82 112L100 94L118 112L134 98L146 112L158 102C158 146 134 178 100 178C66 178 42 146 42 102Z\" fill=\"#0d0d10\"/><text x=\"100\" y=\"164\" text-anchor=\"middle\" font-size=\"62\" font-weight=\"800\" fill=\"#fff\" font-family=\"system-ui,sans-serif\">?</text>',"Mascote ainda não escolhido")}
 function star(x,y,r){var P=[[.3,.7],[.7,.3],[-.7,.3],[-.3,.7],[-.3,-.7],[-.7,-.3],[.7,-.3]];return'<path d="M'+x+' '+(y-r)+P.map(function(a){return"l"+(a[0]*r).toFixed(1)+" "+(a[1]*r).toFixed(1)}).join("")+'z" fill="#facc15"/>'}
+function eye(x,y,r,c){return'<ellipse cx="'+x+'" cy="'+y+'" rx="'+r+'" ry="'+(r*1.15).toFixed(1)+'" fill="'+(c||"#1b1b24")+'"/><circle cx="'+(x+r*.32).toFixed(1)+'" cy="'+(y-r*.42).toFixed(1)+'" r="'+(r*.4).toFixed(1)+'" fill="#fff"/><circle cx="'+(x-r*.38).toFixed(1)+'" cy="'+(y+r*.5).toFixed(1)+'" r="'+(r*.18).toFixed(1)+'" fill="#fff" opacity=".85"/>'}
 var B={
-raposa:function(){return{gc:"#111827",bk:'<path d="M132 168C176 164 184 120 168 100C166 128 150 140 128 142Z" fill="#f05a28"/><path d="M168 100C177 112 178 128 172 140C181 128 181 112 168 100Z" fill="#fff"/>',bd:'<ellipse cx="100" cy="150" rx="32" ry="32" fill="#f05a28"/><ellipse cx="100" cy="158" rx="17" ry="20" fill="#fff"/>',hd:'<path d="M58 80L50 38L90 62Z" fill="#f05a28"/><path d="M142 80L150 38L110 62Z" fill="#f05a28"/><path d="M60 72L58 52L76 64Z" fill="#3b1a10"/><path d="M140 72L142 52L124 64Z" fill="#3b1a10"/><ellipse cx="100" cy="104" rx="50" ry="42" fill="#f05a28"/><path d="M52 112Q100 160 148 112Q128 134 100 134Q72 134 52 112Z" fill="#fff"/>',ey:'<circle cx="80" cy="101" r="7" fill="#1b1b1b"/><circle cx="120" cy="101" r="7" fill="#1b1b1b"/><circle cx="82" cy="99" r="2.4" fill="#fff"/><circle cx="122" cy="99" r="2.4" fill="#fff"/><ellipse cx="100" cy="117" rx="6" ry="4.5" fill="#1b1b1b"/><path d="M92 124q8 6 16 0" stroke="#1b1b1b" stroke-width="3" fill="none" stroke-linecap="round"/>'}},
-coruja:function(){return{gc:"#111827",bk:'<ellipse cx="62" cy="150" rx="14" ry="26" fill="#4d5180" transform="rotate(12 62 150)"/><ellipse cx="138" cy="150" rx="14" ry="26" fill="#4d5180" transform="rotate(-12 138 150)"/>',bd:'<ellipse cx="100" cy="150" rx="36" ry="34" fill="#6b6f9f"/><ellipse cx="100" cy="158" rx="22" ry="22" fill="#cfd3ee"/>',hd:'<path d="M56 78L52 44L86 62Z" fill="#6b6f9f"/><path d="M144 78L148 44L114 62Z" fill="#6b6f9f"/><ellipse cx="100" cy="104" rx="52" ry="42" fill="#6b6f9f"/><circle cx="80" cy="101" r="21" fill="#eef0ff"/><circle cx="120" cy="101" r="21" fill="#eef0ff"/>',ey:'<circle cx="80" cy="102" r="10" fill="#1b1b2b"/><circle cx="120" cy="102" r="10" fill="#1b1b2b"/><circle cx="83" cy="99" r="3.4" fill="#fff"/><circle cx="123" cy="99" r="3.4" fill="#fff"/><path d="M94 114L106 114L100 127Z" fill="#f59e0b"/>'}},
-gato:function(){return{gc:"#facc15",bk:'<path d="M128 170C170 176 184 140 170 116" stroke="#23232f" stroke-width="12" fill="none" stroke-linecap="round"/>',bd:'<ellipse cx="100" cy="150" rx="32" ry="32" fill="#23232f" stroke="#3d3d52" stroke-width="2"/>',hd:'<path d="M56 82L52 40L90 62Z" fill="#23232f" stroke="#3d3d52" stroke-width="2"/><path d="M144 82L148 40L110 62Z" fill="#23232f" stroke="#3d3d52" stroke-width="2"/><path d="M60 74L58 54L76 64Z" fill="#7f1d1d"/><path d="M140 74L142 54L124 64Z" fill="#7f1d1d"/><ellipse cx="100" cy="104" rx="50" ry="42" fill="#23232f" stroke="#3d3d52" stroke-width="2"/>',ey:'<ellipse cx="80" cy="101" rx="9" ry="10" fill="#facc15"/><ellipse cx="120" cy="101" rx="9" ry="10" fill="#facc15"/><ellipse cx="80" cy="101" rx="3" ry="8" fill="#111"/><ellipse cx="120" cy="101" rx="3" ry="8" fill="#111"/><path d="M96 114h8l-4 5z" fill="#f472b6"/><path d="M92 126q8 5 8-3M108 126q-8 5-8-3" stroke="#8b8b9a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M56 114l-18-4M56 120l-18 4M144 114l18-4M144 120l18 4" stroke="#8b8b9a" stroke-width="2" stroke-linecap="round"/>'}},
-dragao:function(L){var w=L>=4?'<g transform="translate(100 140) scale('+(.5+(Math.min(L,9)-4)*.1).toFixed(2)+') translate(-100 -140)"><path d="M70 130C20 90 10 150 20 170C40 156 56 160 74 160Z" fill="#9b1118"/><path d="M130 130C180 90 190 150 180 170C160 156 144 160 126 160Z" fill="#9b1118"/></g>':"";return{gc:"#fde4c8",bk:w+'<path d="M128 168C168 172 184 140 164 124C172 140 156 156 130 154Z" fill="#d8161f"/>',bd:'<ellipse cx="100" cy="150" rx="32" ry="32" fill="#d8161f"/><ellipse cx="100" cy="158" rx="18" ry="22" fill="#fde4c8"/>',hd:'<path d="M66 70L56 36L88 60Z" fill="#fde4c8"/><path d="M134 70L144 36L112 60Z" fill="#fde4c8"/><ellipse cx="100" cy="104" rx="50" ry="42" fill="#d8161f"/><ellipse cx="100" cy="118" rx="22" ry="15" fill="#fde4c8"/>',ey:'<circle cx="80" cy="101" r="9" fill="#fff"/><circle cx="120" cy="101" r="9" fill="#fff"/><circle cx="81" cy="102" r="5" fill="#2a0a0c"/><circle cx="121" cy="102" r="5" fill="#2a0a0c"/><circle cx="93" cy="116" r="2" fill="#7a1d1d"/><circle cx="107" cy="116" r="2" fill="#7a1d1d"/><path d="M92 125q8 5 16 0" stroke="#7a1d1d" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}},
-robo:function(){return{gc:"#e5e7eb",bk:'<path d="M100 68V46" stroke="#cbd5e1" stroke-width="4"/><circle cx="100" cy="42" r="6" fill="#e11d2e"/>',bd:'<rect x="70" y="128" width="60" height="50" rx="16" fill="#f1f5f9"/><rect x="70" y="148" width="60" height="9" fill="#e11d2e"/>',hd:'<rect x="44" y="88" width="12" height="26" rx="6" fill="#cbd5e1"/><rect x="144" y="88" width="12" height="26" rx="6" fill="#cbd5e1"/><rect x="52" y="64" width="96" height="76" rx="28" fill="#f1f5f9"/><rect x="62" y="78" width="76" height="48" rx="18" fill="#1c1c28"/>',ey:'<circle cx="80" cy="101" r="7" fill="#fff"/><circle cx="120" cy="101" r="7" fill="#fff"/><path d="M92 116q8 5 16 0" stroke="#e11d2e" stroke-width="3" fill="none" stroke-linecap="round"/>'}}};
-function spSvg(sp,L,mo,z){var b=B[sp](L),k=KS[L-1],o="",n=(SP.filter(function(x){return x[0]==sp})[0]||SP[0])[1];
-if(L>=10)o+='<defs><radialGradient id="mgl"><stop offset="0" stop-color="#facc15" stop-opacity=".4"/><stop offset="1" stop-color="#facc15" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="112" r="92" fill="url(#mgl)"/>';
-o+='<ellipse cx="100" cy="188" rx="'+(46*k).toFixed(1)+'" ry="7" fill="#000" opacity=".25"/><g transform="translate(100 188) scale('+k+') translate(-100 -188)">'+b.bk+b.bd;
-if(L>=6)o+='<path d="M66 140L134 140L158 186L42 186Z" fill="#a50f1a"/><path d="M100 150L120 186L80 186Z" fill="#7f0b14" opacity=".5"/>'+(L>=10?'<path d="M42 186L158 186" stroke="#facc15" stroke-width="4"/>':"");
-o+=b.hd+b.ey;
-if(mo==1&&sp!="robo")o+='<circle cx="64" cy="118" r="6" fill="#fb7185" opacity=".5"/><circle cx="136" cy="118" r="6" fill="#fb7185" opacity=".5"/>';
-if(mo==2)o+='<path d="M140 78q7 11 0 15q-7-4 0-15z" fill="#60a5fa"/>';
-if(L>=3)o+='<path d="M64 134Q100 156 136 134L136 146Q100 168 64 146Z" fill="#ef4444"/><path d="M118 152l12 24-14 2-6-20z" fill="#dc2626"/>';
-if(L>=4)o+='<g fill="none" stroke="'+(L>=10?"#facc15":b.gc)+'" stroke-width="4"><circle cx="80" cy="101" r="15"/><circle cx="120" cy="101" r="15"/><path d="M95 101h10"/></g>';
-if(L>=7)o+='<path d="M93 150l7 10 7-10z" fill="#ef4444"/><circle cx="100" cy="166" r="8" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>';
-if(L>=5)o+='<path d="M78 74v12q22 12 44 0V74" fill="#1f2937"/><path d="M58 64L100 44L142 64L100 84Z" fill="#111827"/><path d="M142 64v22" stroke="#facc15" stroke-width="3"/><circle cx="142" cy="88" r="3.5" fill="#facc15"/>';
-if(L>=8)o+='<ellipse cx="100" cy="32" rx="28" ry="7" fill="none" stroke="#facc15" stroke-width="'+(L>=10?5:4)+'"/>';
-if(L>=9)o+=star(34,72,9)+star(168,60,10)+star(168,132,7)+star(32,140,6);
+raposa:function(){var o="#f26a2e",s="#d94f1b",w="#fff4e6",k="#3b1d12";return{gc:"#1f2937",
+bk:'<path d="M126 174C176 188 202 140 178 92C174 122 154 142 126 146Z" fill="'+o+'"/><path d="M178 92C192 124 190 156 168 176C178 154 178 124 168 108Z" fill="'+w+'"/>',
+bd:'<ellipse cx="100" cy="154" rx="33" ry="29" fill="'+o+'"/><ellipse cx="100" cy="162" rx="18" ry="20" fill="'+w+'"/><ellipse cx="80" cy="182" rx="13" ry="7" fill="'+k+'"/><ellipse cx="120" cy="182" rx="13" ry="7" fill="'+k+'"/>',
+hd:'<path d="M54 86Q44 48 52 30Q76 40 92 64Z" fill="'+o+'"/><path d="M146 86Q156 48 148 30Q124 40 108 64Z" fill="'+o+'"/><path d="M60 76Q56 54 58 46Q70 52 80 64Z" fill="'+k+'"/><path d="M140 76Q144 54 142 46Q130 52 120 64Z" fill="'+k+'"/><path d="M50 102Q50 62 100 62Q150 62 150 102Q150 112 160 124Q140 124 130 130Q116 140 100 140Q84 140 70 130Q60 124 40 124Q50 112 50 102Z" fill="'+o+'"/><path d="M54 114Q76 112 100 120Q124 112 146 114Q138 128 128 132Q116 140 100 140Q84 140 72 132Q62 128 54 114Z" fill="'+w+'"/>',
+ey:eye(78,100,7)+eye(122,100,7)+'<ellipse cx="100" cy="117" rx="6.5" ry="4.8" fill="#1b1b1b"/><path d="M92 126q8 6 16 0" stroke="#1b1b1b" stroke-width="3" fill="none" stroke-linecap="round"/>'}},
+coruja:function(){var p="#6a6fb4",s="#4f5396",w="#eceefc";return{gc:"#1f2937",
+bk:'<path d="M60 130Q38 150 50 180Q72 172 74 140Z" fill="'+s+'"/><path d="M140 130Q162 150 150 180Q128 172 126 140Z" fill="'+s+'"/>',
+bd:'<ellipse cx="100" cy="152" rx="36" ry="32" fill="'+p+'"/><ellipse cx="100" cy="160" rx="23" ry="23" fill="'+w+'"/><path d="M89 154q5 5 10 0q5 5 10 0M91 164q5 5 9 0q5 5 9 0" stroke="#b9bde6" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="86" cy="184" rx="9" ry="5" fill="#f59e0b"/><ellipse cx="114" cy="184" rx="9" ry="5" fill="#f59e0b"/>',
+hd:'<path d="M54 80L50 40L88 62Z" fill="'+p+'"/><path d="M146 80L150 40L112 62Z" fill="'+p+'"/><ellipse cx="100" cy="104" rx="52" ry="43" fill="'+p+'"/><circle cx="79" cy="102" r="22" fill="'+w+'"/><circle cx="121" cy="102" r="22" fill="'+w+'"/>',
+ey:eye(79,102,10.5,"#1b1b2b")+eye(121,102,10.5,"#1b1b2b")+'<path d="M92 112L108 112L100 128Z" fill="#f59e0b" stroke="#f59e0b" stroke-width="3" stroke-linejoin="round"/>'}},
+gato:function(){var c="#2b2b38",h="#3d3d4f",w="#f4f4f5";return{gc:"#facc15",
+bk:'<path d="M128 172C172 180 190 142 172 114" stroke="'+c+'" stroke-width="13" fill="none" stroke-linecap="round"/>',
+bd:'<ellipse cx="100" cy="153" rx="32" ry="30" fill="'+c+'"/><ellipse cx="100" cy="162" rx="15" ry="19" fill="'+w+'"/><ellipse cx="82" cy="182" rx="12" ry="7" fill="'+w+'"/><ellipse cx="118" cy="182" rx="12" ry="7" fill="'+w+'"/>',
+hd:'<path d="M54 88L50 42L92 66Z" fill="'+c+'" stroke="'+c+'" stroke-width="6" stroke-linejoin="round"/><path d="M146 88L150 42L108 66Z" fill="'+c+'" stroke="'+c+'" stroke-width="6" stroke-linejoin="round"/><path d="M60 76L58 56L78 66Z" fill="#f4a5b8"/><path d="M140 76L142 56L122 66Z" fill="#f4a5b8"/><ellipse cx="100" cy="104" rx="51" ry="43" fill="'+c+'"/><ellipse cx="90" cy="123" rx="14" ry="11" fill="'+w+'"/><ellipse cx="110" cy="123" rx="14" ry="11" fill="'+w+'"/>',
+ey:'<ellipse cx="78" cy="101" rx="9" ry="10.5" fill="#facc15"/><ellipse cx="122" cy="101" rx="9" ry="10.5" fill="#facc15"/><ellipse cx="78" cy="101" rx="3" ry="8.5" fill="#111"/><ellipse cx="122" cy="101" rx="3" ry="8.5" fill="#111"/><circle cx="81" cy="96" r="2.2" fill="#fff"/><circle cx="125" cy="96" r="2.2" fill="#fff"/><path d="M95 113h10l-5 6z" fill="#f48fb1"/><path d="M100 119v3M100 122q-5 5-10 1M100 122q5 5 10 1" stroke="#6b7280" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M58 112l-20-5M58 119l-20 5M142 112l20-5M142 119l20 5" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>'}},
+dragao:function(L){var r="#e0262e",s="#b81a22",c="#ffe0bd",w="";if(L>=4){var sc=(.55+(Math.min(L,9)-4)*.1).toFixed(2);w='<g transform="translate(100 140) scale('+sc+') translate(-100 -140)"><path d="M72 132C24 88 8 148 20 172C40 158 56 162 76 160Z" fill="'+s+'"/><path d="M128 132C176 88 192 148 180 172C160 158 144 162 124 160Z" fill="'+s+'"/><path d="M72 132C40 112 24 138 28 160M128 132C160 112 176 138 172 160" stroke="#8f1219" stroke-width="3" fill="none" stroke-linecap="round"/></g>'}
+return{gc:"#ffe0bd",
+bk:w+'<path d="M128 170C170 176 188 142 166 122" stroke="'+r+'" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M158 112L174 108L170 126Z" fill="'+s+'" stroke="'+s+'" stroke-width="3" stroke-linejoin="round"/>',
+bd:'<ellipse cx="100" cy="153" rx="32" ry="30" fill="'+r+'"/><ellipse cx="100" cy="160" rx="18" ry="22" fill="'+c+'"/><path d="M90 152h20M90 161h20M91 170h18" stroke="#f0b987" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="80" cy="182" rx="13" ry="7" fill="'+s+'"/><ellipse cx="120" cy="182" rx="13" ry="7" fill="'+s+'"/>',
+hd:'<path d="M68 72Q56 46 64 30Q82 42 90 64Z" fill="'+c+'"/><path d="M132 72Q144 46 136 30Q118 42 110 64Z" fill="'+c+'"/><path d="M92 64L100 48L108 64Z" fill="'+s+'" stroke="'+s+'" stroke-width="3" stroke-linejoin="round"/><ellipse cx="100" cy="104" rx="51" ry="43" fill="'+r+'"/><ellipse cx="100" cy="120" rx="25" ry="17" fill="#f2545a"/>',
+ey:eye(78,100,7.5)+eye(122,100,7.5)+'<circle cx="92" cy="116" r="2.2" fill="#8f1219"/><circle cx="108" cy="116" r="2.2" fill="#8f1219"/><path d="M91 126q9 6 18 0" stroke="#8f1219" stroke-width="2.8" fill="none" stroke-linecap="round"/>'}},
+hacker:function(){var d="#1f2937",g="#22c55e",k="#05080c";return{gc:"#4ade80",
+bk:'<path d="M130 172C164 178 180 154 168 132C164 124 170 116 178 118" stroke="#475569" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="173" y="110" width="11" height="13" rx="2.5" fill="'+g+'"/>',
+bd:'<ellipse cx="100" cy="154" rx="36" ry="30" fill="'+d+'"/><path d="M92 136v12M108 136v12" stroke="#e5e7eb" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="64" cy="162" rx="10" ry="15" fill="'+d+'" transform="rotate(14 64 162)"/><ellipse cx="136" cy="162" rx="10" ry="15" fill="'+d+'" transform="rotate(-14 136 162)"/><rect x="76" y="146" width="48" height="26" rx="4" fill="#0b0f14" stroke="#64748b" stroke-width="3"/><path d="M92 154l-6 5 6 5M108 154l6 5-6 5M103 152l-6 14" stroke="'+g+'" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="68" y="171" width="64" height="6" rx="3" fill="#64748b"/><ellipse cx="80" cy="184" rx="13" ry="6" fill="#0f172a" stroke="'+g+'" stroke-width="2"/><ellipse cx="120" cy="184" rx="13" ry="6" fill="#0f172a" stroke="'+g+'" stroke-width="2"/>',
+hd:'<path d="M100 28C128 40 152 70 152 104C152 134 130 146 100 146C70 146 48 134 48 104C48 70 72 40 100 28Z" fill="'+d+'"/><path d="M100 62C124 66 140 84 140 106C140 128 122 138 100 138C78 138 60 128 60 106C60 84 76 66 100 62Z" fill="'+k+'" stroke="#374151" stroke-width="3"/>',
+ey:'<rect x="68" y="95" width="22" height="12" rx="6" fill="'+g+'" transform="rotate(12 79 101)"/><rect x="110" y="95" width="22" height="12" rx="6" fill="'+g+'" transform="rotate(-12 121 101)"/><circle cx="84" cy="99" r="2.2" fill="#d1fae5"/><circle cx="116" cy="99" r="2.2" fill="#d1fae5"/><path d="M92 123h16" stroke="'+g+'" stroke-width="3" stroke-linecap="round" opacity=".7"/>'}},
+robo:function(){var b="#f1f5f9",g="#cbd5e1",d="#94a3b8";return{gc:"#e5e7eb",
+bk:'<path d="M100 66V46" stroke="'+g+'" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="40" r="7" fill="#e11d2e"/>',
+bd:'<rect x="56" y="140" width="16" height="28" rx="8" fill="'+g+'"/><rect x="128" y="140" width="16" height="28" rx="8" fill="'+g+'"/><rect x="72" y="128" width="56" height="50" rx="18" fill="'+b+'"/><circle cx="100" cy="152" r="7" fill="#e11d2e"/><rect x="80" y="172" width="18" height="12" rx="6" fill="'+d+'"/><rect x="102" y="172" width="18" height="12" rx="6" fill="'+d+'"/>',
+hd:'<rect x="42" y="90" width="14" height="26" rx="7" fill="'+g+'"/><rect x="144" y="90" width="14" height="26" rx="7" fill="'+g+'"/><rect x="52" y="62" width="96" height="78" rx="30" fill="'+b+'"/><rect x="62" y="76" width="76" height="52" rx="21" fill="#14141c"/>',
+ey:'<rect x="71" y="90" width="14" height="20" rx="7" fill="#fff"/><rect x="115" y="90" width="14" height="20" rx="7" fill="#fff"/><path d="M92 117q8 6 16 0" stroke="#e11d2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>'}}};
+var AC2=[["oculos",6,"Óculos"],["capelo",10,"Capelo"],["capa",14,"Capa"],["medalha",18,"Medalha"],["aureola",30,"Auréola dourada"]];
+function accOwned(k){if(!D)return false;if(!D.accOwn){var L0={oculos:6,capelo:7,capa:8,medalha:9,aureola:10},l=lvl();D.accOwn=Object.keys(L0).filter(function(x){return l>=L0[x]})}return D.accOwn.indexOf(k)>=0}
+function accOn(k){var a=AC2.filter(function(x){return x[0]==k})[0];return !!(D&&a&&accOwned(k)&&!(D.acc&&D.acc[k]===0))}
+function accSet(){var r={};AC2.forEach(function(a){r[a[0]]=accOn(a[0])});return r}
+function P(d,f,x){return'<path d="'+d+'" fill="'+f+'"'+(x||"")+'/>'}
+function tx(x,y,t,c){return'<text x="'+x+'" y="'+y+'" font-size="14" font-weight="700" fill="'+c+'" font-family="monospace" opacity=".9">'+t+'</text>'}
+function EV(sp,s){var b="",f="";
+if(sp=="raposa"){var o="#f26a2e",w="#fff4e6";
+if(s>=2)f+=P("M52 118q-12 6-12 20q10-2 18-10z",w)+P("M148 118q12 6 12 20q-10-2-18-10z",w);
+if(s>=3)b+=P("M74 168C22 190 2 142 26 98C32 128 52 148 78 152Z",o)+P("M26 98C18 130 24 156 44 176C34 154 36 128 40 112Z",w);
+if(s>=4)b+=P("M132 100C170 72 164 30 126 12C140 40 130 60 110 72Z",o)+P("M126 12q8 14 4 26q-10-8-4-26z",w);
+if(s>=5){f+=P("M100 62q-7 8 0 16q7-8 0-16z","#e11d2e");b+=P("M26 98q-10-12-4-28q12 12 4 28z","#60a5fa")+P("M126 12q-8-10-2-22q10 10 2 22z","#60a5fa")}}
+if(sp=="coruja"){var d="#4f5396";
+if(s>=2)f+=P("M58 66l-8-20l18 10z",d)+P("M142 66l8-20l-18 10z",d);
+if(s>=3)b+=P("M64 126C20 118 6 156 20 186C48 178 66 160 72 146Z",d)+P("M136 126C180 118 194 156 180 186C152 178 134 160 128 146Z",d);
+if(s>=4)f+='<path d="M80 150q20 14 40 0M82 162q18 12 36 0" stroke="#aeb3e6" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M62 82q16-10 32-4M138 82q-16-10-32-4" stroke="#2b2e63" stroke-width="4" fill="none" stroke-linecap="round"/>';
+if(s>=5)f+=P("M100 58l7 10l-7 10l-7-10z","#e11d2e")+P("M84 54l-4-14l14 8zM116 54l4-14l-14 8z",d)}
+if(sp=="gato"){var c="#2b2b38",y="#facc15";
+if(s>=2)f+='<path d="M56 100l12 3M56 108l12-1M144 100l-12 3M144 108l-12-1" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>';
+if(s>=3)f+='<path d="M68 138Q100 156 132 138" stroke="#e11d2e" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="100" cy="153" r="7" fill="'+y+'" stroke="#ca8a04" stroke-width="2"/>';
+if(s>=4)f+='<path d="M72 164l9 3M128 164l-9 3M92 62v12M100 60v14M108 62v12" stroke="#4a4a5e" stroke-width="3" stroke-linecap="round"/>';
+if(s>=5){b+='<path d="M72 176C26 186 8 148 26 120" stroke="'+c+'" stroke-width="13" fill="none" stroke-linecap="round"/>';f+='<path d="M100 72a10 10 0 1 0 0 20a7.5 7.5 0 1 1 0-20z" fill="'+y+'"/>'}}
+if(sp=="dragao"){var r="#e0262e",d="#b81a22",g="#facc15";
+if(s>=2)f+=P("M50 108l-12 4l10 8z",d)+P("M150 108l12 4l-10 8z",d);
+if(s>=3)f+=P("M92 140l8 8l8-8z","#ffd166")+'<path d="M90 158h20M90 167h20" stroke="#e8a45a" stroke-width="3" stroke-linecap="round"/>';
+if(s>=5){f+=P("M146 122q20-8 28 6q-16 4-28-6z","#fb923c")+P("M148 124q12-4 18 2q-10 2-18-2z","#fde047")+star(36,44,8)+star(166,34,9);b+=P("M72 44l4-16l8 10z",g)+P("M128 44l-4-16l-8 10z",g)}}
+if(sp=="hacker"){var g="#22c55e";
+if(s>=2)f+='<path d="M60 108C58 78 78 64 100 64C122 64 142 78 140 108" stroke="'+g+'" stroke-width="3" fill="none" opacity=".65"/>';
+if(s>=3)f+='<path d="M46 110C40 48 160 48 154 110" stroke="#94a3b8" stroke-width="7" fill="none"/><rect x="38" y="98" width="16" height="28" rx="8" fill="#e11d2e"/><rect x="146" y="98" width="16" height="28" rx="8" fill="#e11d2e"/>';
+if(s>=4)f+=tx(18,60,"01",g)+tx(150,50,"&lt;/&gt;",g)+tx(158,92,"{}",g);
+if(s>=5)b+='<ellipse cx="100" cy="116" rx="90" ry="22" fill="none" stroke="'+g+'" stroke-width="2.5" stroke-dasharray="5 7" opacity=".8"/>'+'<rect x="14" y="150" width="16" height="11" rx="2" fill="none" stroke="'+g+'" stroke-width="2"/><rect x="170" y="150" width="16" height="11" rx="2" fill="none" stroke="'+g+'" stroke-width="2"/>'}
+if(sp=="robo"){var g="#cbd5e1";
+if(s>=2)f+='<rect x="44" y="152" width="14" height="24" rx="7" fill="'+g+'"/><rect x="142" y="152" width="14" height="24" rx="7" fill="'+g+'"/>';
+if(s>=3)f+='<circle cx="100" cy="40" r="12" fill="none" stroke="#e11d2e" stroke-width="2.5" opacity=".7"/>';
+if(s>=4)f+='<rect x="84" y="140" width="32" height="28" rx="6" fill="#14141c"/><path d="M90 148h20M90 155h12M90 162h18" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>';
+if(s>=5){b+='<circle cx="100" cy="116" r="88" fill="none" stroke="#94a3b8" stroke-width="4" stroke-dasharray="10 8" opacity=".7"/>';f+=P("M76 182l8 14l8-14z","#fb923c")+P("M108 182l8 14l8-14z","#fb923c")}}
+return{b:b,f:f}}
+function spSvg(sp,L,mo,z,full,A){var st=Math.min(L,5),b=B[sp](st),k=full?1:KS[L-1],o="",n=(SP.filter(function(x){return x[0]==sp})[0]||SP[0])[1],AU={oculos:6,capelo:7,capa:8,medalha:9,aureola:10};
+function has(x){return A?!!A[x]:L>=AU[x]}
+var au=has("aureola");
+if(au)o+='<defs><radialGradient id="mgl"><stop offset="0" stop-color="#facc15" stop-opacity=".35"/><stop offset="1" stop-color="#facc15" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="112" r="92" fill="url(#mgl)"/>';
+o+='<ellipse cx="100" cy="188" rx="'+(46*k).toFixed(1)+'" ry="7" fill="#000" opacity=".22"/><g transform="translate(100 188) scale('+k+') translate(-100 -188)">';
+if(has("capa"))o+='<path d="M70 136Q40 168 34 186L166 186Q160 168 130 136Z" fill="#c1121f"/><path d="M100 146L118 186L82 186Z" fill="#8f0e18" opacity=".5"/>'+(au?'<path d="M34 186L166 186" stroke="#facc15" stroke-width="4" stroke-linecap="round"/>':"");
+var e=EV(sp,st);o+=e.b+b.bk+b.bd+b.hd+b.ey+e.f;
+if(mo==1&&sp!="robo")o+='<circle cx="62" cy="118" r="6" fill="#fb7185" opacity=".5"/><circle cx="138" cy="118" r="6" fill="#fb7185" opacity=".5"/>';
+if(mo==2)o+='<path d="M142 76q7 11 0 15q-7-4 0-15z" fill="#60a5fa"/>';
+if(has("oculos"))o+='<g fill="rgba(255,255,255,.12)" stroke="'+(au?"#facc15":b.gc)+'" stroke-width="3.5"><circle cx="79" cy="101" r="15"/><circle cx="121" cy="101" r="15"/><path d="M94 101h12"/></g>';
+if(has("medalha"))o+='<path d="M93 150l7 10 7-10z" fill="#ef4444"/><circle cx="100" cy="166" r="8" fill="#facc15" stroke="#ca8a04" stroke-width="2"/><path d="M100 161l1.9 3.9 4.1.6-3 2.9.7 4.1-3.7-1.9-3.7 1.9.7-4.1-3-2.9 4.1-.6z" fill="#ca8a04"/>';
+if(has("capelo"))o+='<path d="M76 70v13q24 12 48 0V70" fill="#1f2937"/><path d="M56 64L100 42L144 64L100 86Z" fill="#111827"/><path d="M144 64v24" stroke="#facc15" stroke-width="3" stroke-linecap="round"/><circle cx="144" cy="90" r="4" fill="#facc15"/>';
+if(au)o+='<ellipse cx="100" cy="30" rx="28" ry="7" fill="none" stroke="#facc15" stroke-width="5"/>'+star(32,72,9)+star(168,58,10)+star(170,134,7)+star(30,142,6);
 return sv(z,o+'</g>',n+", nível "+L+" ("+NM[L-1]+")")}
-mascSvg=function(st,c,mo,z){z=z||200;if(!D||D.xp==null||!(D.hatch||rkI(lvl())>0))return egg(z,0);if(!D.sp)return qm(z);return spSvg(D.sp,Math.min(10,lvl()),mo||0,z)};
+function mAccT(k){D.acc=D.acc||{};D.acc[k]=accOn(k)?0:1;save();R()}
+window.mAcc=mAccT;
+var PF={
+raposa:{n:"Raposa",r:[
+["Personalidade","Esperta, rápida e curiosa. Sempre acha um atalho de raciocínio antes de todo mundo.",1],
+["Onde mora","Numa toca no Bosque dos Ipês, com vista para a trilha da escola.",1],
+["Família","Vive com a mãe e três irmãos. Ela é a mais velha e ajuda todos com a lição.",2],
+["Passatempo","Resolver charadas e correr pelas trilhas ao amanhecer.",2],
+["Comida favorita","Amoras colhidas na hora e pão de queijo quentinho.",3],
+["Maior medo","Perder a hora e chegar atrasada na aula.",3],
+["Matéria favorita","Matemática, principalmente quebra-cabeças de lógica.",4],
+["Sonho","Ser a primeira a terminar a Maratona dos Quebra-Cabeças.",4],
+["Dica de estudo","Resolva primeiro as questões fáceis e depois volte nas difíceis.",5],
+["Frase","“Quem pensa rápido ainda precisa conferir a conta.”",5]]},
+coruja:{n:"Coruja",r:[
+["Personalidade","Calma, observadora e paciente. Prefere ouvir antes de responder.",1],
+["Onde mora","No oco de um jequitibá velho, bem ao lado da biblioteca.",1],
+["Família","Mora com os avós corujas, que contam histórias antes de dormir.",2],
+["Passatempo","Ler à noite e contar as estrelas da janela.",2],
+["Comida favorita","Biscoito de mel com chá de camomila.",3],
+["Maior medo","Barulho de liquidificador na hora do silêncio.",3],
+["Matéria favorita","História e Ciências, porque tudo tem uma explicação para descobrir.",4],
+["Sonho","Montar a maior biblioteca do bosque.",4],
+["Dica de estudo","Releia em voz baixa e faça pausas curtas. A calma ajuda a lembrar.",5],
+["Frase","“Quem observa com atenção aprende duas vezes.”",5]]},
+gato:{n:"Gato",r:[
+["Personalidade","Curioso e independente. Gosta de descobrir as coisas do próprio jeito.",1],
+["Onde mora","No telhado de uma padaria, de onde vê o bairro inteiro.",1],
+["Família","Não tem família fixa, mas é amigo de todos os vizinhos da rua.",2],
+["Passatempo","Explorar becos novos e tirar sonecas ao sol.",2],
+["Comida favorita","Sardinha com arroz e leite morno.",3],
+["Maior medo","Hora do banho.",3],
+["Matéria favorita","Geografia, porque adora mapas e lugares que ainda não visitou.",4],
+["Sonho","Dar a volta ao mundo e voltar para a mesma padaria.",4],
+["Dica de estudo","Descubra o horário em que você rende mais e estude do seu jeito.",5],
+["Frase","“Cada um aprende no seu ritmo, e tudo bem.”",5]]},
+dragao:{n:"Dragão",r:[
+["Personalidade","Forte, corajoso e leal. Defende os amigos sem pensar duas vezes.",1],
+["Onde mora","Numa caverna quentinha na Serra das Brasas.",1],
+["Família","Tem um irmão mais novo que sempre copia tudo o que ele faz.",2],
+["Passatempo","Levantar pedras e acender as velinhas de aniversário dos amigos.",2],
+["Comida favorita","Pamonha quentinha e pimenta doce.",3],
+["Maior medo","Espirro que apaga o fogo.",3],
+["Matéria favorita","Educação Física e Ciências, para entender como a força funciona.",4],
+["Sonho","Ser o guardião da escola e proteger todos os alunos.",4],
+["Dica de estudo","Comece pelo assunto mais difícil enquanto a energia ainda está alta.",5],
+["Frase","“Coragem é continuar tentando mesmo com medo.”",5]]},
+robo:{n:"Robô",r:[
+["Personalidade","Lógico, preciso e organizado. Gosta de tudo no lugar certo.",1],
+["Onde mora","No laboratório da escola, ao lado da estação de carregar.",1],
+["Família","Foi montado por uma turma de alunos, que até hoje o chamam de colega.",2],
+["Passatempo","Organizar planilhas e montar circuitos pequenos.",2],
+["Comida favorita","Nenhuma, mas adora carregar a bateria às dez da noite.",3],
+["Maior medo","Falta de bateria no meio de uma prova.",3],
+["Matéria favorita","Matemática, onde cada passo leva a uma resposta certa.",4],
+["Sonho","Aprender a contar uma piada que todo mundo entenda.",4],
+["Dica de estudo","Divida o problema em passos pequenos e confira cada um.",5],
+["Frase","“Todo erro é um dado a mais para acertar na próxima.”",5]]},
+hacker:{n:"Hacker",r:[
+["Personalidade","Curioso e furtivo. Adora entender como as coisas funcionam por dentro.",1],
+["Onde mora","Num quarto cheio de cabos e luzes verdes.",1],
+["Família","Mora com a irmã mais velha, que o ensinou a usar a internet com segurança.",2],
+["Passatempo","Decifrar códigos e criar senhas fortes.",2],
+["Comida favorita","Pizza de calabresa e suco gelado.",3],
+["Maior medo","Ficar sem internet no meio da aula.",3],
+["Matéria favorita","Informática e Matemática, onde tudo é lógica e padrão.",4],
+["Sonho","Ser o hacker do bem que protege a escola de golpes online.",4],
+["Dica de estudo","Teste, erre e tente de novo. Cada erro é uma pista.",5],
+["Frase","“Quem entende o sistema também sabe protegê-lo.”",5]]}
+};
+var VZ={
+raposa:{u:["Ei, rápido!","Opa, atenção!"],n:["Escuta essa:","Bora!"],p:["Uhul, mandou bem!","Boa, ágil!"]},
+coruja:{u:["Hum… preciso te avisar:","Com calma, mas é importante:"],n:["Uma dica tranquila:","Repare só:"],p:["Muito bem, com calma e constância.","Que orgulho de você."]},
+gato:{u:["Miau, não quero te apressar, mas…","Ei, humano…"],n:["Do meu jeito:","Entre uma soneca e outra:"],p:["Miau! Gostei.","Nada mal mesmo."]},
+dragao:{u:["Aviso de dragão!","Atenção, guerreiro!"],n:["Com coragem:","Respire fundo e vá:"],p:["Que fogo!","Rugido de vitória!"]},
+robo:{u:["Alerta:","Aviso do sistema:"],n:["Dado útil:","Sugestão calculada:"],p:["Meta concluída.","Resultado excelente."]},
+hacker:{u:["Alerta no radar:","Psiu, olha isso:"],n:["Dica do sistema:","Truque rápido:"],p:["Acesso liberado: parabéns!","Missão cumprida."]}};
+var DICAS=["Estude em blocos de 25 minutos e descanse 5. A cabeça agradece.","Explicar em voz alta o que aprendeu ajuda a fixar.","Revisar no dia seguinte vale mais do que reler tudo na véspera.","Dormir bem ajuda o cérebro a guardar o que você estudou.","Comece pela matéria mais difícil, com a cabeça fresca.","Beba água e levante um pouco entre uma matéria e outra.","Anote suas dúvidas para perguntar ao professor.","Faça resumos com as suas próprias palavras.","Estudar um pouco todo dia vence estudar muito de uma vez.","Errou? Ótimo: a questão vai para o caderno de erros e volta na hora certa."];
+function mFala(urg){
+if(!D||!D.sp||!D.tasks)return null;
+var V=VZ[D.sp]||VZ.raposa,d=Math.floor(Date.now()/864e5),pk=function(a,o){return a[(d+(o||0))%a.length]},
+T=TS(),pd=T.filter(function(x){return!x.ok}),at=pd.filter(function(x){return x.date<TODAY}).length,hj=pd.filter(function(x){return x.date==TODAY}).length,am=pd.filter(function(x){return dBetween(TODAY,x.date)==1}).length,
+cd=cadDue().length,P=D.pl,h=new Date().getHours(),mn=(D.min&&D.min[(new Date().getDay()+6)%7])||0,goal=(D.meta||2)*60,
+r=function(k,b,a){return{t:pk(V[k])+" "+b,a:a}};
+if(cd>0)return r("u","Você tem "+cd+(cd==1?" questão":" questões")+" para revisar no caderno de erros. Revisar agora fixa de vez.","cad");
+if(at>0)return r("u","Você tem "+at+(at==1?" tarefa atrasada":" tarefas atrasadas")+". Que tal resolver uma agora?","tasks");
+if(hj>0)return r("n","Hoje "+(hj==1?"vence 1 tarefa":"vencem "+hj+" tarefas")+". Vamos adiantar?","tasks");
+if(am>0)return r("n","Amanhã "+(am==1?"vence 1 tarefa":"vencem "+am+" tarefas")+". Dá para começar hoje.","tasks");
+if(P&&P.d>=TODAY&&dBetween(TODAY,P.d)<=7){var n=dBetween(TODAY,P.d);return r("u","Faltam "+(n==0?"0 dias":n+(n==1?" dia":" dias"))+" para "+P.n+". Siga o plano de hoje.","plano")}
+if(D.streak>0&&D.last!=TODAY&&(urg||h>=17))return r("u","Sua sequência de "+D.streak+(D.streak==1?" dia":" dias")+" está em risco. Uma atividade rápida salva!","foco");
+if(urg)return null;
+if(D.dd!=TODAY)return r("n","O desafio do dia vale XP em dobro. Topa?","dia");
+if(goal>0&&mn>=goal)return r("p","A meta de hoje está batida! Descansar também faz parte.","foco");
+if(mn>0&&mn<goal)return r("n","Faltam "+(goal-mn)+" min para a meta de hoje.","foco");
+var ac=AC2.filter(function(a){return!accOwned(a[0])}).sort(function(a,b){return a[1]-b[1]})[0];
+if(ac&&typeof coins=="function"&&coins()>=ac[1])return r("p","Você tem "+coins()+" moedas: já dá para comprar "+ac[2]+" na loja.","masc");
+if(h<6||h>=23)return r("n","Já está tarde. Descansar também é estudar!","masc");
+var tp=[PF[D.sp]&&PF[D.sp].r[8][1]].concat(DICAS);
+return r("n",pk(tp),"masc")}
+window.mFalaN=function(){var f=mFala(true);return f?f.t:""};
+window.mFalaT=function(){var f=mFala(false);return f?esc(f.t):""};
+window.mFalaTit=function(){return D&&D.sp?(D.mn||"Estudinho")+" · Estuda+":"Estuda+"};
+window.mFalaFixa=function(){var V=VZ[D&&D.sp]||VZ.raposa;return V.n[0]+" hora de estudar! Suas tarefas estão te esperando."};
+var _hm=VW.home;VW.home=function(){var h=_hm.apply(this,arguments);try{var f=mFala(false),k='<div class="qh-home">';if(f&&typeof h=="string"&&h.indexOf(k)>=0){var nm=esc(D.mn||"Estudinho"),tx=esc(f.t);h=h.replace(k,k+'<button class="c mfala" onclick="go(\''+f.a+'\')" aria-label="'+nm+' diz: '+tx+'"><div style="flex:none">'+mascSvg(0,0,0,56)+'</div><div style="min-width:0"><b style="font-size:13px">'+nm+'</b><div style="font-size:14px;line-height:1.4;margin-top:2px">'+tx+'</div></div></button>')}}catch(e){}return h};
+try{var _st=document.createElement("style");_st.textContent=".mfala{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:0 0 12px;padding:10px 14px;color:inherit;font:inherit;cursor:pointer}";document.head.appendChild(_st)}catch(e){}
+function perfil(){var P=PF[D&&D.sp];if(!P)return"";var l=lvl();return'<h2 class="sh2">Perfil · '+P.n+'</h2><div class="c mn">'+P.r.map(function(r){var ok=l>=r[2];return'<div class="mr2" style="cursor:default;align-items:flex-start"><div class="g"><b>'+r[0]+'</b><div class="mu" style="line-height:1.45;margin-top:2px">'+(ok?r[1]:"Libera no nível "+r[2])+'</div></div></div>'}).join("")+'</div>'}
+function accPanel(){var c=typeof coins=="function"?coins():0;return'<h2 class="sh2">Loja de acessórios · '+c+' moedas</h2><div class="mu" style="font-size:12.5px;margin:-4px 0 8px">Cada 20 XP viram 1 moeda. Seu nível não diminui.</div><div class="c mn">'+AC2.map(function(a){var own=accOwned(a[0]),on=accOn(a[0]);return'<div class="mr2" style="cursor:default"><div class="g"><b>'+a[2]+'</b><div class="mu">'+(own?(on?"Em uso":"Guardado"):a[1]+" moedas")+'</div></div>'+(own?'<button class="sw'+(on?" on":"")+'" role="switch" aria-checked="'+on+'" aria-label="'+a[2]+'" onclick="mAcc(\''+a[0]+'\')"></button>':'<button class="pl" style="margin:0;padding:6px 12px;font-size:13px" onclick="mBuy(\''+a[0]+'\')">Comprar</button>')+'</div>'}).join("")+'</div>'}
+window.mBuy=function(k){var a=AC2.filter(function(x){return x[0]==k})[0];if(!a||!D||accOwned(k))return;if(coins()<a[1])return toast("Moedas insuficientes.");D.gs=(D.gs||0)+a[1];D.accOwn.push(k);D.acc=D.acc||{};D.acc[k]=1;try{tlAdd("Ganhei: "+a[2])}catch(e){}save();toast("Comprado: "+a[2]);R()};
+mascSvg=function(st,c,mo,z){z=z||200;if(!D||D.xp==null||!(D.hatch||rkI(lvl())>0))return egg(z,0);if(!D.sp)return qm(z);return spSvg(D.sp,Math.min(10,lvl()),mo||0,z,0,accSet())};
 var _m=VW.masc;
 VW.masc=function(){
 var l=lvl(),L=Math.min(10,l);
 if(!(D.hatch||rkI(l)>0))return _m();
 var nm=esc(D.mn||"Estudinho");
-if(!D.sp)return hdb("hub","Seu mascote")+'<div class="pf" style="text-align:center;padding:16px"><div style="display:flex;justify-content:center">'+qm(120)+'</div><h1 style="margin:6px 0 4px">Escolha seu mascote</h1><div class="mu">Ele evolui a cada nível, até o nível 10.</div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px">'+SP.map(function(x){return'<button class="c" style="margin:0;text-align:center;cursor:pointer;color:inherit;font:inherit" onclick="mPick(\''+x[0]+'\')">'+spSvg(x[0],4,0,84,x[1])+'<b style="display:block">'+x[1]+'</b><span class="mu">'+x[2]+'</span></button>'}).join("")+'</div>';
+if(!D.sp)return hdb("hub","Seu mascote")+'<div class="pf" style="text-align:center;padding:16px"><div style="display:flex;justify-content:center">'+qm(120)+'</div><h1 style="margin:6px 0 4px">Escolha seu mascote</h1><div class="mu">Ele evolui até o nível 5. Os acessórios você compra na loja, com moedas.</div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px">'+SP.map(function(x){return'<button class="c" style="margin:0;text-align:center;cursor:pointer;color:inherit;font:inherit" onclick="mPick(\''+x[0]+'\')">'+spSvg(x[0],5,0,84,1)+'<b style="display:block">'+x[1]+'</b><span class="mu">'+x[2]+'</span></button>'}).join("")+'</div>';
 var sp=SP.filter(function(x){return x[0]==D.sp})[0]||SP[0];
-return hdb("hub","Seu mascote")+'<div class="pf" style="text-align:center;padding:20px 16px"><div style="display:flex;justify-content:center">'+mascSvg(0,0,0,200)+'</div><h1 style="margin:6px 0 0">'+nm+'</h1><div class="mu" style="font-weight:700">'+sp[1]+' · nível '+L+' · '+NM[L-1]+'</div><div class="mu" style="margin-top:8px;line-height:1.5">'+(L<10?'Evolui no nível '+(L+1)+' ('+NM[L]+'). Você está no nível '+l+'.':'Ele chegou na forma final: dourado!')+'</div>'+(L<10?'<div class="bar"><i style="width:'+(D.xp%100)+'%"></i></div>':"")+'</div><div class="c"><b>Nome do mascote</b><input class="in" id="mnn" value="'+nm+'" maxlength="16" style="margin-top:8px"></div><button class="btn" onclick="mnSv()">Salvar nome</button><button class="btn o" onclick="mTroc()">Trocar mascote</button>'};
+return hdb("hub","Seu mascote")+'<div class="pf" style="text-align:center;padding:20px 16px"><div style="display:flex;justify-content:center">'+mascSvg(0,0,0,200)+'</div><h1 style="margin:6px 0 0">'+nm+'</h1><div class="mu" style="font-weight:700">'+sp[1]+' · nível '+L+' · '+NM[Math.min(L,5)-1]+'</div><div class="mu" style="margin-top:8px;line-height:1.5">'+(L<5?'Evolui no nível '+(L+1)+' ('+NM[L]+'). Você está no nível '+l+'.':'Forma adulta! Vista seu mascote com os acessórios da loja, logo abaixo.')+'</div>'+(L<5?'<div class="bar"><i style="width:'+(D.xp%100)+'%"></i></div>':"")+'</div>'+perfil()+accPanel()+'<div class="c"><b>Nome do mascote</b><input class="in" id="mnn" value="'+nm+'" maxlength="16" style="margin-top:8px"></div><button class="btn" onclick="mnSv()">Salvar nome</button><button class="btn o" onclick="mTroc()">Trocar mascote</button>'};
 window.mPick=function(k){D.sp=k;D.hatch=1;save();try{confetti(100)}catch(e){}toast("Mascote escolhido!");R()};
 window.mTroc=function(){D.sp=null;save();R()};
 var _h=window.hatchEgg;window.hatchEgg=function(){if(D.hatch)return;var w=document.getElementById("eggw");if(w)w.innerHTML=egg(200,1);_h()};
