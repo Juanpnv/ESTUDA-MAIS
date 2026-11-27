@@ -2282,4 +2282,44 @@ window.EAlog=function(e){try{var l=JSON.parse(localStorage.getItem("ea_err")||"[
 window.tdelq=function(id,aid){var o=document.createElement("div");o.className="mdl";o.innerHTML='<div role="dialog" aria-modal="true" aria-labelledby="mdt"><h2 id="mdt">Excluir tarefa?</h2><p>Esta ação não pode ser desfeita.</p><button class="btn" id="mdy">Excluir</button><button class="btn o" id="mdn">Cancelar</button></div>';var c=function(){o.remove();document.removeEventListener("keydown",k)},k=function(e){if(e.key=="Escape")c()};document.addEventListener("keydown",k);o.onclick=function(e){if(e.target==o)c()};document.body.appendChild(o);o.querySelector("#mdn").onclick=c;o.querySelector("#mdy").onclick=function(){c();tdel(id,aid)};o.querySelector("#mdn").focus()};
 /* helpers de estado (4.0): window.EAst.err/ok/load/skel retornam HTML pronto */
 window.EAst={err:(t,r)=>`<div class="st er" role="alert"><span>${esc(t)}</span>${r?`<button class="btn o" onclick="${r}">Tentar de novo</button>`:""}</div>`,ok:t=>`<div class="st ok" role="status"><span>${esc(t)}</span></div>`,load:t=>`<div class="st ld" role="status"><span>${esc(t||"Carregando…")}</span></div>`,skel:(n=3)=>Array.from({length:n},()=>'<div class="skel" aria-hidden="true"></div>').join("")};
-</script></body></html>
+</script><style id="chocar-css">
+@keyframes eggShake{0%,100%{transform:rotate(0)}10%{transform:rotate(-9deg)}25%{transform:rotate(9deg)}40%{transform:rotate(-12deg) scale(1.03)}55%{transform:rotate(12deg) scale(1.05)}70%{transform:rotate(-8deg) scale(1.07)}85%{transform:rotate(6deg) scale(1.1)}}
+@keyframes eggPop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.egg-shake{animation:eggShake .9s ease-in-out;transform-origin:50% 90%}
+.egg-pop{animation:eggPop .6s ease-out}
+@media (prefers-reduced-motion:reduce){.egg-shake,.egg-pop{animation:none}}
+</style>
+<script id="chocar-js">
+/* Chocar o ovo: botão disponível a qualquer momento na tela do mascote */
+(function(){
+  var _ms=mascSvg;
+  mascSvg=function(st,c,mo,z){ if(st<=0&&typeof D!=="undefined"&&D&&D.hatch)st=1; return _ms(st,c,mo,z) };
+  var _m=VW.masc;
+  VW.masc=function(){
+    var h=_m(),ci=rkI(lvl()),egg=!D.hatch&&Math.min(ci,7)<=0,nome=esc(D.mn||"Estudinho");
+    if(egg){
+      h=h.replace('<div style="display:flex;justify-content:center"><svg','<div id="eggw" style="display:flex;justify-content:center"><svg');
+      h=h.replace('<div class="c"><b>Nome do mascote</b>','<button id="eggbtn" class="btn" onclick="hatchEgg()" style="margin-bottom:6px">Chocar o ovo</button><div class="mu" style="text-align:center;font-size:13px;margin:2px 0 10px">Pode chocar quando quiser, sem precisar subir de nível.</div><div class="c"><b>Nome do mascote</b>');
+    } else if(D.hatch&&ci==0){
+      h=h.replace('fase 1','fase 2');
+    }
+    return h;
+  };
+  window.hatchEgg=function(){
+    if(D.hatch)return;
+    var w=document.getElementById("eggw"),b=document.getElementById("eggbtn");
+    if(b){b.disabled=true;b.style.opacity=".6";b.textContent="Chocando…"}
+    if(w)w.classList.add("egg-shake");
+    setTimeout(function(){
+      D.hatch=1;save();
+      try{confetti(80)}catch(e){}
+      try{toast("O ovo chocou! Conheça o "+(D.mn||"Estudinho"))}catch(e){}
+      try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}
+      R();
+      var n=document.querySelector("#app svg");if(n&&n.parentNode)n.parentNode.classList.add("egg-pop");
+    },reduce()?150:950);
+    function reduce(){try{return matchMedia("(prefers-reduced-motion:reduce)").matches}catch(e){return false}}
+  };
+})();
+</script>
+</body></html>
